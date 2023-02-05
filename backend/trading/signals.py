@@ -56,3 +56,7 @@ def update_summary(sender, instance, created, **kwargs):
         # get closed_position wich is profit or losse from the instance trade created
         new_value = instance.closed_position
         summary.update_starting_balance(new_value)
+
+        # get closed_position to populate total_profit_loss
+        new_value = instance.closed_position
+        summary.update_total_profit_loss(new_value)

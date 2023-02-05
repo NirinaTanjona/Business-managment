@@ -8,40 +8,6 @@ from django_extensions.db.models import (
     TitleSlugDescriptionModel
 )
 
-
-class Trade(
-    TimeStampedModel,
-    ActivatorModel ,
-    Model):
-
-    """
-    trading.Trade
-    Store 1 Trade log in each post request from the User
-    """
-
-    class Meta:
-        verbose_name = 'Trade'
-        verbose_name_plural = 'Trades'
-        ordering = ['created']
-
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    market = models.CharField(default="EURUSD", max_length=200)
-    closed_position = models.DecimalField(max_digits=10, decimal_places=2)
-    entry_price = models.FloatField()
-    stop_loss_price = models.FloatField()
-    take_profit_price = models.FloatField()
-    risk_reward = models.CharField(max_length=200, null=True, blank=True)
-
-    def save(self, *args, **kwargs):
-        sl = self.stop_loss_price - self.entry_price
-        tp = self.entry_price - self.take_profit_price
-        r = round(tp /sl)
-        self.risk_reward = f"1:{r}"
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return f"{self.market} at {self.created}"
-
 class Summary(
     ActivatorModel ,
     Model):
@@ -65,7 +31,12 @@ class Summary(
     avg_winning_trade = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     avg_losing_trade = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     total_trade_costs = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-    trade_win_rate = models.CharField(max_length=10)
+    total_profit_loss = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    average_profit_loss_per_trade = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    return_of_investment = models.CharField(default='0%', max_length=10)
+    average_risk_per_trade = models.CharField(default='1:1', max_length=10)
+    average_risk_reward_per_trade = models.CharField(default='0%', max_length=10)
+    trade_win_rate = models.CharField('0%', max_length=10)
 
     def update_total_number_of_trades(self, total_number_of_trades):
         self.total_number_of_trades = total_number_of_trades
@@ -104,3 +75,42 @@ class Summary(
     def update_starting_balance(self, new_value):
         self.starting_balance += new_value
         self.save()
+
+    def update_total_profit_loss(self, new_value):
+        self.total_profit_loss += new_value
+        self.save()
+
+
+class Trade(
+    TimeStampedModel,
+    ActivatorModel ,
+    Model):
+
+    """
+    trading.Trade
+    Store 1 Trade log in each post request from the User
+    """
+
+    class Meta:
+        verbose_name = 'Trade'
+        verbose_name_plural = 'Trades'
+        ordering = ['created']
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    summary = models.ForeignKey(Summary, on_delete=models.CASCADE, null=True, blank=True)
+    market = models.CharField(default="EURUSD", max_length=200)
+    closed_position = models.DecimalField(max_digits=10, decimal_places=2)
+    entry_price = models.FloatField()
+    stop_loss_price = models.FloatField()
+    take_profit_price = models.FloatField()
+    risk_reward = models.CharField(max_length=200, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        sl = self.stop_loss_price - self.entry_price
+        tp = self.entry_price - self.take_profit_price
+        r = round(tp /sl)
+        self.risk_reward = f"1:{r}"
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.market} at {self.created}"

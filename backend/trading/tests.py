@@ -40,6 +40,8 @@ class SummaryTestCase(APITestCase):
         #Stats of the 2 users
         self.summary1 = Summary.objects.get(user=self.user1)
         self.summary2 = Summary.objects.get(user=self.user2)
+        self.starting_balance1 = Decimal('0.0')
+        self.starting_balance2 = Decimal('0.0')
 
         #The app uses token authentication, each user have 1 unique Token
         self.token1 = Token.objects.get(user = self.user1)
@@ -155,8 +157,17 @@ class SummaryTestCase(APITestCase):
         '''
         sum1 = self.trades_user1.aggregate(Sum('closed_position'))['closed_position__sum']
         sum2 = self.trades_user2.aggregate(Sum('closed_position'))['closed_position__sum']
-        self.assertEqual(self.summary1.starting_balance, round(sum1, 2))
-        self.assertEqual(self.summary2.starting_balance, round(sum2, 2))
+        self.assertEqual(self.summary1.starting_balance, round(self.starting_balance1 + sum1, 2))
+        self.assertEqual(self.summary2.starting_balance, round(self.starting_balance2 + sum2, 2))
+
+    def test_update_total_profit_loss(self):
+        '''
+        test total_profit_loss in each instance of trade
+        '''
+        sum1 = self.trades_user1.aggregate(Sum('closed_position'))['closed_position__sum']
+        sum2 = self.trades_user2.aggregate(Sum('closed_position'))['closed_position__sum']
+        self.assertEqual(self.summary1.total_profit_loss, round(sum1, 2))
+        self.assertEqual(self.summary2.total_profit_loss, round(sum2, 2))
 
 
     # def test_get_one_item(self):
