@@ -48,3 +48,11 @@ def update_summary(sender, instance, created, **kwargs):
         # set the avg_winning_trade
         avg_winning_trade = query.filter(closed_position__gt=0).aggregate(Avg('closed_position'))['closed_position__avg']
         summary.update_avg_winning_trade(avg_winning_trade)
+
+        # set the avg_losing_trade
+        avg_losing_trade = query.filter(closed_position__lt=0).aggregate(Avg('closed_position'))['closed_position__avg']
+        summary.update_avg_losing_trade(avg_losing_trade)
+
+        # get closed_position wich is profit or losse from the instance trade created
+        new_value = instance.closed_position
+        summary.update_starting_balance(new_value)
