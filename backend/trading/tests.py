@@ -33,15 +33,15 @@ class SummaryTestCase(APITestCase):
         self.starting_balance2 = self.user2.summary.starting_balance
 
 
-        Trade.objects.create(user=self.user1, market= "CADJPY", closed_position=-1.01, entry_price=99.562, stop_loss_price=99.272, take_profit_price=100.166)
-        Trade.objects.create(user=self.user1, market= "EURUSD", closed_position=2.76, entry_price=1.05911, stop_loss_price=1.05953, take_profit_price=1.06463)
-        Trade.objects.create(user=self.user1, market= "EURGBP", closed_position=-5.1, entry_price=0.87641, stop_loss_price=0.8784, take_profit_price=0.87212)
-        Trade.objects.create(user=self.user1, market= "EURCHF", closed_position=8.11, entry_price=0.98424, stop_loss_price=0.9848, take_profit_price=0.98805)
-        Trade.objects.create(user=self.user2, market= "AUDUSD", closed_position=-1.06, entry_price=0.67894, stop_loss_price=0.68001, take_profit_price=0.67627)
-        Trade.objects.create(user=self.user2, market= "GBPAUD", closed_position=4.6, entry_price=1.76311, stop_loss_price=1.76262, take_profit_price=1.75488)
-        Trade.objects.create(user=self.user2, market= "AUDCAD", closed_position=-1.89, entry_price=0.92445, stop_loss_price=0.92636, take_profit_price=0.91954)
-        Trade.objects.create(user=self.user2, market= "USDCAD", closed_position=0.53, entry_price=1.36056, stop_loss_price=1.36094, take_profit_price=1.36381)
-        Trade.objects.create(user=self.user2, market= "XAUUSD", closed_position=-2.80, entry_price=1911.64, stop_loss_price=1914.43, take_profit_price=1930.32)
+        Trade.objects.create(user=self.user1, market= "CADJPY", closed_position=-1.01, entry_price=99.562, stop_loss_price=99.272, actual_exit_price=100.166)
+        Trade.objects.create(user=self.user1, market= "EURUSD", closed_position=2.76, entry_price=1.05911, stop_loss_price=1.05953, actual_exit_price=1.06463)
+        Trade.objects.create(user=self.user1, market= "EURGBP", closed_position=-5.1, entry_price=0.87641, stop_loss_price=0.8784, actual_exit_price=0.87212)
+        Trade.objects.create(user=self.user1, market= "EURCHF", closed_position=8.11, entry_price=0.98424, stop_loss_price=0.9848, actual_exit_price=0.98805)
+        Trade.objects.create(user=self.user2, market= "AUDUSD", closed_position=-1.06, entry_price=0.67894, stop_loss_price=0.68001, actual_exit_price=0.67627)
+        Trade.objects.create(user=self.user2, market= "GBPAUD", closed_position=4.6, entry_price=1.76311, stop_loss_price=1.76262, actual_exit_price=1.75488)
+        Trade.objects.create(user=self.user2, market= "AUDCAD", closed_position=-1.89, entry_price=0.92445, stop_loss_price=0.92636, actual_exit_price=0.91954)
+        Trade.objects.create(user=self.user2, market= "USDCAD", closed_position=0.53, entry_price=1.36056, stop_loss_price=1.36094, actual_exit_price=1.36381)
+        Trade.objects.create(user=self.user2, market= "XAUUSD", closed_position=-2.80, entry_price=1911.64, stop_loss_price=1914.43, actual_exit_price=1930.32)
 
         self.trades = Trade.objects.all()
         self.trades_user1 = Trade.objects.filter(user=self.user1).all()

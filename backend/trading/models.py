@@ -152,14 +152,20 @@ class Trade(
     summary = models.ForeignKey(Summary, on_delete=models.CASCADE, null=True, blank=True)
     market = models.CharField(default="EURUSD", max_length=200)
     closed_position = models.DecimalField(max_digits=10, decimal_places=2)
-    entry_price = models.FloatField()
-    stop_loss_price = models.FloatField()
-    take_profit_price = models.FloatField()
+    entry_price = models.FloatField(default=0)
+    stop_loss_price = models.FloatField(default=0)
+    take_profit_price = models.FloatField(null=True, blank=True)
+    actual_exit_price = models.FloatField(default=0)
     risk_reward = models.CharField(max_length=200, null=True, blank=True)
+    screen_before = models.URLField(null=True, blank=True)
+    screen_after = models.URLField(null=True, blank=True)
+    trade_notes = models.TextField(null=True, blank=True)
+    discipline_rating = models.IntegerField(null=True, blank=True)
+    emotional_state_of_mind = models.TextField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
         sl = self.stop_loss_price - self.entry_price
-        tp = self.entry_price - self.take_profit_price
+        tp = self.entry_price - self.actual_exit_price
         r = round(tp /sl)
         self.risk_reward = f"1:{r}"
         super().save(*args, **kwargs)
