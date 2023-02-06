@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User
-from django.db.models import Max, Min, Avg
+from django.db.models import Max, Min, Avg, Sum
 from rest_framework.authtoken.models import Token
 from .models import Trade, Summary
 
@@ -53,10 +53,6 @@ def update_summary(sender, instance, created, **kwargs):
         avg_losing_trade = query.filter(closed_position__lt=0).aggregate(Avg('closed_position'))['closed_position__avg']
         summary.update_avg_losing_trade(avg_losing_trade)
 
-        # get closed_position wich is profit or losse from the instance trade created
-        new_value = instance.closed_position
-        summary.update_starting_balance(new_value)
-
         # get closed_position to populate total_profit_loss
-        new_value = instance.closed_position
-        summary.update_total_profit_loss(new_value)
+        total_profit_loss = query.aggregate(Sum('closed_position'))['closed_position__sum']
+        summary.update_total_profit_loss(total_profit_loss)

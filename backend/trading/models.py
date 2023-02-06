@@ -1,4 +1,5 @@
 import math
+from decimal import *
 from django.db import models
 from django.contrib.auth.models import User
 from utils.model_abstracts import Model
@@ -22,6 +23,7 @@ class Summary(
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     starting_balance = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    balance = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     total_number_of_trades = models.PositiveIntegerField(default=0)
     total_number_of_winning_trades = models.PositiveIntegerField(default=0)
     total_number_of_losing_trades = models.PositiveIntegerField(default=0)
@@ -33,10 +35,11 @@ class Summary(
     total_trade_costs = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     total_profit_loss = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     average_profit_loss_per_trade = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-    return_of_investment = models.CharField(default='0%', max_length=10)
-    average_risk_per_trade = models.CharField(default='1:1', max_length=10)
-    average_risk_reward_per_trade = models.CharField(default='0%', max_length=10)
-    trade_win_rate = models.CharField('0%', max_length=10)
+    return_of_investment = models.CharField(default='0%', max_length=200)
+    average_risk_reward = models.CharField(default='1:1', max_length=200)
+    average_risk_per_trade = models.CharField(default='0%', max_length=200)
+    average_reward_per_trade = models.CharField(default='0%', max_length=200)
+    trade_win_rate = models.CharField('0%', max_length=200)
 
     def update_total_number_of_trades(self, total_number_of_trades):
         self.total_number_of_trades = total_number_of_trades
@@ -47,7 +50,7 @@ class Summary(
         self.save()
 
     def update_total_number_of_losing_trades(self, total_number_of_losing_trades):
-        self.total_number_of_winning_trades = total_number_of_losing_trades
+        self.total_number_of_losing_trades = total_number_of_losing_trades
         self.save()
 
     def update_largest_winning_trade(self, largest_winning_trade):
@@ -72,13 +75,62 @@ class Summary(
             self.avg_losing_trade = avg_losing_trade
             self.save()
 
-    def update_starting_balance(self, new_value):
-        self.starting_balance += new_value
+    def update_balance(self, new_balance):
+        self.balance = new_balance
         self.save()
 
-    def update_total_profit_loss(self, new_value):
-        self.total_profit_loss += new_value
+    def set_starting_balance(self, starting_balance):
+        self.starting_balance = starting_balance
         self.save()
+
+    def update_total_profit_loss(self, total_profit_loss):
+        self.total_profit_loss = total_profit_loss
+        self.save()
+
+    def save(self, *args, **kwargs):
+        if self.total_number_of_trades:
+        # update the average profit loss per trade value by other field in the save model
+            self.average_profit_loss_per_trade = self.total_profit_loss / self.total_number_of_trades
+
+        # update return of investment field (accumulated P/L + starting balance) / starting balance * 100
+        if self.total_profit_loss:
+            roi = (self.total_profit_loss / self.starting_balance) * 100
+            self.return_of_investment = f"{round(roi, 2)}%"
+        else:
+            self.return_of_investment = "0%"
+
+        # update balance by adding the profit and loss to the starting balance
+        self.balance = self.starting_balance + self.total_profit_loss
+
+        # update the average risk per trade in each trade created
+        # (average losing trade / balance) * 100
+        if self.balance:
+            average_risk_per_trade = round((self.avg_losing_trade / self.balance) * 100, 2)
+            self.average_risk_per_trade = f"{average_risk_per_trade}%"
+        else:
+            self.average_risk_per_trade = "0%"
+
+        # update the average reward per trade in each trade created
+        # (average winning trade / balance) * 100
+        if self.balance:
+            average_reward_per_trade = round((self.avg_winning_trade / self.balance) * 100, 2)
+            self.average_reward_per_trade = f"{average_reward_per_trade}%"
+        else:
+            self.average_reward_per_trade = "0%"
+
+        # update the average risk reward in each trade created
+        # (average winning trade / average losing trade) * 100
+        avg_risk_reward = 0
+        if self.avg_winning_trade and self.avg_losing_trade:
+            avg_risk_reward = round((self.avg_winning_trade / abs(self.avg_losing_trade)), 2)
+        elif self.avg_winning_trade == 0:
+            avg_risk_reward = 0
+        elif self.avg_losing_trade == 0:
+            avg_risk_reward = self.avg_winning_trade
+
+        self.average_risk_reward = f"1:{avg_risk_reward}"
+
+        super().save(*args, **kwargs)
 
 
 class Trade(
