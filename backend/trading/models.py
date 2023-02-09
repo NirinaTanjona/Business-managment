@@ -39,7 +39,7 @@ class Summary(
     average_risk_reward = models.CharField(default='1:1', max_length=200)
     average_risk_per_trade = models.CharField(default='0%', max_length=200)
     average_reward_per_trade = models.CharField(default='0%', max_length=200)
-    trade_win_rate = models.CharField('0%', max_length=200)
+    trade_win_rate = models.CharField(default='0%', max_length=200)
 
     def update_total_number_of_trades(self, total_number_of_trades):
         self.total_number_of_trades = total_number_of_trades
@@ -149,8 +149,8 @@ class Trade(
         ordering = ['created']
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    summary = models.ForeignKey(Summary, on_delete=models.CASCADE, null=True, blank=True)
-    market = models.CharField(default="EURUSD", max_length=200)
+    summary = models.ForeignKey(Summary, related_name='trades', on_delete=models.CASCADE, null=True, blank=True)
+    market = models.CharField(default='EURUSD', max_length=200)
     closed_position = models.DecimalField(max_digits=10, decimal_places=2)
     entry_price = models.FloatField(default=0)
     stop_loss_price = models.FloatField(default=0)
