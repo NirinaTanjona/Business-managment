@@ -6,15 +6,14 @@ from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from rest_framework.mixins import ListModelMixin,UpdateModelMixin,RetrieveModelMixin, CreateModelMixin
+from rest_framework.mixins import ListModelMixin,UpdateModelMixin,RetrieveModelMixin, DestroyModelMixin
 
 
 
 class TradeViewSet(
         ListModelMixin,
         RetrieveModelMixin,
-        UpdateModelMixin,
-        CreateModelMixin,
+        DestroyModelMixin,
         viewsets.GenericViewSet
         ):
     """
@@ -35,6 +34,19 @@ class TradeViewSet(
             serializer = self.get_serializer(data=data)
             if serializer.is_valid(raise_exception=True):
                 serializer.save(user=current_user, summary=current_user.summary)
+                return Response(serializer.data)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except JSONDecodeError:
+            return JsonResponse({"result": "error","message": "Json decoding error"}, status= 400)
+
+    def partial_update(self, request, *args, **kwargs):
+        try:
+            data = JSONParser().parse(request)
+            instance = self.get_object()
+            serializer = self.get_serializer(instance, data=data, partial=True)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
                 return Response(serializer.data)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

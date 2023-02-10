@@ -68,12 +68,16 @@ class Summary(
     def update_avg_winning_trade(self, avg_winning_trade):
         if avg_winning_trade:
             self.avg_winning_trade = avg_winning_trade
-            self.save()
+        else:
+            self.avg_winning_trade = 0
+        self.save()
 
     def update_avg_losing_trade(self, avg_losing_trade):
         if avg_losing_trade:
             self.avg_losing_trade = avg_losing_trade
-            self.save()
+        else:
+            self.avg_losing_trade = 0
+        self.save()
 
     def update_balance(self, new_balance):
         self.balance = new_balance
@@ -91,6 +95,8 @@ class Summary(
         if self.total_number_of_trades:
         # update the average profit loss per trade value by other field in the save model
             self.average_profit_loss_per_trade = self.total_profit_loss / self.total_number_of_trades
+        else:
+            self.average_profit_loss_per_trade = 0
 
         # update return of investment field (accumulated P/L + starting balance) / starting balance * 100
         if self.total_profit_loss:

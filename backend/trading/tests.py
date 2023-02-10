@@ -282,6 +282,25 @@ class SummaryTestCase(APITestCase):
         response = self.client.patch(f'/summary/{self.summary1.id}/', data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+
+    def test_update_partial_on_trade(self):
+        '''
+        test send patch method to trade
+        '''
+        data = {"closed_position": 500}
+        for trade in self.trades_user1.all():
+            response = self.client.patch(f'/trade/{trade.id}/', data)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_delete_trade(self):
+        '''
+        test delete trade
+        '''
+        for trade in self.trades_user1.all():
+            response = self.client.delete(f'/trade/{trade.id}/')
+            self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+
     def test_create_trade_on_trade(self):
         '''
         test create trade on Trade model
@@ -296,83 +315,3 @@ class SummaryTestCase(APITestCase):
         '''
         self.assertEqual(self.summary1.trades.all().count(), self.trades_user1.count())
         self.assertEqual(self.summary2.trades.all().count(), self.trades_user2.count())
-
-
-    # def test_get_one_item(self):
-    #     '''
-    #     test ItemsViewSet retrieve method
-    #     '''
-    #     for item in self.items:
-    #         response = self.client.get(f'/item/{item.id}/')
-    #         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    # def test_order_is_more_than_stock(self):
-    #     '''
-    #     test Item.check_stock when order.quantity > item.stock
-    #     '''
-    #     for i in self.items:
-    #         current_stock = i.stock
-    #         self.assertEqual(i.check_stock(current_stock + 1), False)
-
-    # def test_order_equals_stock(self):
-    #     '''
-    #     test Item.check_stock when order.quantity == item.stock
-    #     '''
-    #     for i in self.items:
-    #         current_stock = i.stock
-    #         self.assertEqual(i.check_stock(current_stock), True)
-
-    # def test_order_is_less_than_stock(self):
-    #     '''
-    #     test Item.check_stock when order.quantity < item.stock
-    #     '''
-    #     for i in self.items:
-    #         current_stock = i.stock
-    #         self.assertTrue(i.check_stock(current_stock - 1), True)
-
-    # def test_create_order_with_more_than_stock(self):
-    #     '''
-    #     test OrdersViewSet create method when order.quantity > item.stock
-    #     '''
-    #     for i in self.items:
-    #         stock = i.stock
-    #         data = {"item": str(i.id), "quantity": str(stock+1)}
-    #         response = self.client.post(f'/order/', data)
-    #         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    # def test_create_order_with_less_than_stock(self):
-    #     '''
-    #     test OrdersViewSet create method when order.quantity < item.stock
-    #     '''
-    #     for i in self.items:
-    #         data = {"item": str(i.id), "quantity": 1}
-    #         response = self.client.post(f'/order/',data)
-    #         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    # def test_create_order_with_equal_stock(self):
-    #     '''
-    #     test OrdersViewSet create method when order.quantity == item.stock
-    #     '''
-    #     for i in self.items:
-    #         stock = i.stock
-    #         data = {"item": str(i.id), "quantity": str(stock)}
-    #         response = self.client.post(f'/order/',data)
-    #         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    # def test_get_all_orders(self):
-    #     '''
-    #     test OrdersViewSet list method
-    #     '''
-    #     self.assertEqual(Order.objects.count(), 2)
-    #     response = self.client.get('/order/')
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-
-    # def test_get_one_order(self):
-    #     '''
-    #     test OrdersViewSet retrieve method
-    #     '''
-    #     orders = Order.objects.filter(user = self.user)
-    #     for o in orders:
-    #         response = self.client.get(f'/order/{o.id}/')
-    #         self.assertEqual(response.status_code, status.HTTP_200_OK)
