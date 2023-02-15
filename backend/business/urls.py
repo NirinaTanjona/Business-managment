@@ -14,5 +14,6 @@ urlpatterns = router.urls
 
 urlpatterns += [
     path('admin/', admin.site.urls),
-    path('api-token-auth/', obtain_auth_token), #gives us access to token auth
+    path('sign-in/', obtain_auth_token), #gives us access to token auth
+    path('sign-up/', trading_views.UserRegister.as_view(), name='sign-up'),
 ]

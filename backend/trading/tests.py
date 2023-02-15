@@ -6,6 +6,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 from rest_framework.test import APITestCase
 from rest_framework import status
+import json
 
 
 class SummaryTestCase(APITestCase):
@@ -308,6 +309,14 @@ class SummaryTestCase(APITestCase):
         data = {"market": "GBPAUD", "closed_position": 4.6, "entry_price": 1.76311, "stop_loss_price": 1.76262, "actual_exit_price": 1.75488 }
         response = self.client.post('/trade/', data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_create_use(self):
+        '''
+        test create new use
+        '''
+        data = {"username": "tanjona", "email": "tanjona@test.com", "password": "tanjona_password"}
+        response = self.client.post('/sign-up/', data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_trades_on_summary_model(self):
         '''
