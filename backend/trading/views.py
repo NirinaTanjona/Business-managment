@@ -1,4 +1,5 @@
 from json import JSONDecodeError
+from rest_framework import parsers, renderers
 from django.http import JsonResponse
 from .serializers import TradeSerializer, SummarySerializer
 from .models import Summary , Trade
@@ -15,6 +16,9 @@ class UserRegister(APIView):
     """
     For Sign-up purpose
     """
+    parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.JSONParser,)
+    renderer_classes = (renderers.JSONRenderer,)
+
     def post(self, request):
         data = JSONParser().parse(request)
         try:
@@ -23,7 +27,7 @@ class UserRegister(APIView):
                 email=data['email'],
                 password=data['password'],
             )
-            return Response({'message': 'Welcome!'}, status=status.HTTP_201_CREATED)
+            return Response({'summaryId': user.summary.id}, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({'message': f'Error in registration: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
 
