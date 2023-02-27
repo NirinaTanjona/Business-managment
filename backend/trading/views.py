@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from .serializers import TradeSerializer, SummarySerializer
 from .models import Summary , Trade
 from django.contrib.auth.models import User
+from rest_framework.decorators import action
 from rest_framework.views import APIView
 from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
@@ -27,7 +28,7 @@ class UserRegister(APIView):
                 email=data['email'],
                 password=data['password'],
             )
-            return Response({'summaryId': user.summary.id}, status=status.HTTP_201_CREATED)
+            return Response({'message': 'success!'}, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({'message': f'Error in registration: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -104,3 +105,13 @@ class SummaryViewSet(
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except JSONDecodeError:
             return JsonResponse({"result": "error","message": "Json decoding error"}, status= 400)
+
+
+    @action(detail=False)
+    def get_summary_id(self, request):
+        try:
+            summary = self.get_queryset()[0]
+            id = summary.id
+            return Response({"id": id})
+        except JSONDecodeError:
+            return JsonResponse({"result": "error", "message": "Summary not found"}, status=400)
