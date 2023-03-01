@@ -28,7 +28,7 @@ class UserRegister(APIView):
                 email=data['email'],
                 password=data['password'],
             )
-            return Response({'message': 'success!'}, status=status.HTTP_201_CREATED)
+            return Response({'message': 'You are registered'}, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({'message': f'Error in registration: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -57,7 +57,7 @@ class TradeViewSet(
             serializer = self.get_serializer(data=data)
             if serializer.is_valid(raise_exception=True):
                 serializer.save(user=current_user, summary=current_user.summary)
-                return Response(serializer.data)
+                return Response({'message': 'trade log created'}, status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except JSONDecodeError:
@@ -100,7 +100,7 @@ class SummaryViewSet(
             serializer = self.get_serializer(instance, data=data, partial=True)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
-                return Response(serializer.data)
+                return Response({"message": "Starting balance updated"}, status=status.HTTP_200_OK)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except JSONDecodeError:
