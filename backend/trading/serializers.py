@@ -14,6 +14,13 @@ class TradeSerializer(serializers.ModelSerializer):
         source = 'trades'
 
 
+class ChartDataSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Trade
+        fields = ['id', 'created', 'modified', 'balance']
+
+
 class SummarySerializer(serializers.ModelSerializer):
 
     trades = TradeSerializer(many=True)

@@ -128,13 +128,13 @@ class Summary(
         # (average winning trade / average losing trade) * 100
         avg_risk_reward = 0
         if self.avg_winning_trade and self.avg_losing_trade:
-            avg_risk_reward = round((self.avg_winning_trade / abs(self.avg_losing_trade)), 2)
+            avg_risk_reward = self.avg_winning_trade / abs(self.avg_losing_trade)
         elif self.avg_winning_trade == 0:
             avg_risk_reward = 0
         elif self.avg_losing_trade == 0:
             avg_risk_reward = self.avg_winning_trade
 
-        self.average_risk_reward = f"1:{avg_risk_reward}"
+        self.average_risk_reward = f"1:{avg_risk_reward:.2f}"
 
         super().save(*args, **kwargs)
 

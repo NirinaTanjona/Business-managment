@@ -1,7 +1,7 @@
 from json import JSONDecodeError
 from rest_framework import parsers, renderers
 from django.http import JsonResponse
-from .serializers import TradeSerializer, SummarySerializer
+from .serializers import TradeSerializer, SummarySerializer, ChartDataSerializer
 from .models import Summary , Trade
 from django.contrib.auth.models import User
 from rest_framework.decorators import action
@@ -75,6 +75,14 @@ class TradeViewSet(
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except JSONDecodeError:
             return JsonResponse({"result": "error","message": "Json decoding error"}, status= 400)
+
+    @action(detail=False, serializer_class=ChartDataSerializer)
+    def get_data_for_chartline(self, request):
+        try:
+            serializer = self.get_serializer(instance = self.get_queryset(), many = True)
+            return Response(serializer.data)
+        except JSONDecodeError:
+            return JsonResponse({"result": "error", "message": "Error in getting trade data"}, status= 400)
 
 
 class SummaryViewSet(
