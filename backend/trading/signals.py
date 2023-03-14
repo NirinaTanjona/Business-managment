@@ -64,6 +64,8 @@ def update_summary(sender, instance, created, **kwargs):
     if created:
         # Get the user owner of the trade
         action(user, summary, query)
+        # Update balance the same as balance in summary
+        instance.update_balance(summary.balance)
     else:
         action(user, summary, query)
 

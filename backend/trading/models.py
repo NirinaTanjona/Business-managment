@@ -156,6 +156,7 @@ class Trade(
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     summary = models.ForeignKey(Summary, related_name='trades', on_delete=models.CASCADE, null=True, blank=True)
+    balance = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     market = models.CharField(default='EURUSD', max_length=200)
     direction = models.CharField(default='SHORT', max_length=200)
     closed_position = models.DecimalField(max_digits=10, decimal_places=2)
@@ -169,6 +170,10 @@ class Trade(
     trade_notes = models.TextField(null=True, blank=True)
     discipline_rating = models.IntegerField(null=True, blank=True)
     emotional_state_of_mind = models.TextField(null=True, blank=True)
+
+    def update_balance(self, new_balance):
+        self.balance = new_balance
+        self.save()
 
     def save(self, *args, **kwargs):
         sl = self.stop_loss_price - self.entry_price
