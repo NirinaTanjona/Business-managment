@@ -50,14 +50,30 @@ class TradeViewSet(
         user = self.request.user
         return Trade.objects.filter(user=user).all()
 
-    def create(self, request):
+    # def create(self, request):
+    #     try:
+    #         data = JSONParser().parse(request)
+    #         current_user = request.user
+    #         summary = Summary.objects.get(pk=self.args)
+    #         current_summary = current_user.summary
+    #         serializer = self.get_serializer(data=data)
+    #         if serializer.is_valid(raise_exception=True):
+    #             serializer.save(user=current_user, summary=current_summary)
+    #             return Response({'message': 'trade log created'}, status=status.HTTP_201_CREATED)
+    #         else:
+    #             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    #     except JSONDecodeError:
+    #         return JsonResponse({"result": "error","message": "Json decoding error"}, status= 400)
+    @action(detail=True, methods=['POST'])
+    def create_trade_for_summary(self, request, pk=None):
         try:
             data = JSONParser().parse(request)
             current_user = request.user
+            summary = Summary.objects.get(pk=pk)
             serializer = self.get_serializer(data=data)
             if serializer.is_valid(raise_exception=True):
-                serializer.save(user=current_user, summary=current_user.summary)
-                return Response({'message': 'trade log created'}, status=status.HTTP_201_CREATED)
+                serializer.save(user=current_user, summary=summary)
+                return Response(serializer.data)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except JSONDecodeError:
@@ -76,7 +92,7 @@ class TradeViewSet(
         except JSONDecodeError:
             return JsonResponse({"result": "error","message": "Json decoding error"}, status= 400)
 
-    @action(detail=False, serializer_class=ChartDataSerializer)
+    @action(detail=False, serializer_class=ChartDataSerializer, renderer_classes=(renderers.JSONRenderer,))
     def get_data_for_chartline(self, request):
         try:
             serializer = self.get_serializer(instance = self.get_queryset(), many = True)
@@ -101,6 +117,20 @@ class SummaryViewSet(
         user = self.request.user
         return Summary.objects.filter(user=user).all()
 
+    def create(self, request):
+        try:
+            data = JSONParser().parse(request)
+            current_user = request.user
+            serializer = self.get_serializer(data=data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save(user=current_user)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except JSONDecodeError:
+            return JsonResponse({"result": "error","message": "Json decoding error"}, status= 400)
+
+
     def partial_update(self, request, *args, **kwargs):
         try:
             data = JSONParser().parse(request)
@@ -108,18 +138,18 @@ class SummaryViewSet(
             serializer = self.get_serializer(instance, data=data, partial=True)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
-                return Response({"message": "Starting balance updated"}, status=status.HTTP_200_OK)
+                return Response({"message": "Summary updated"}, status=status.HTTP_200_OK)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except JSONDecodeError:
             return JsonResponse({"result": "error","message": "Json decoding error"}, status= 400)
 
 
-    @action(detail=False)
-    def get_summary_id(self, request):
-        try:
-            summary = self.get_queryset()[0]
-            id = summary.id
-            return Response({"id": id})
-        except JSONDecodeError:
-            return JsonResponse({"result": "error", "message": "Summary not found"}, status=400)
+    # @action(detail=False)
+    # def get_summary_id(self, request):
+    #     try:
+    #         summary = self.get_queryset()[0]
+    #         id = summary.id
+    #         return Response({"id": id})
+    #     except JSONDecodeError:
+    #         return JsonResponse({"result": "error", "message": "Summary not found"}, status=400)

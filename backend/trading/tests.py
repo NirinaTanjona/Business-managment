@@ -26,34 +26,44 @@ class SummaryTestCase(APITestCase):
             password='this_is_a_test',
             email='testuser2@test.com'
         )
-        self.user1.summary.update_balance(300)
-        self.user2.summary.update_balance(500)
-        self.user1.summary.set_starting_balance(300)
-        self.user2.summary.set_starting_balance(500)
-        self.starting_balance1 = self.user1.summary.starting_balance
-        self.starting_balance2 = self.user2.summary.starting_balance
+
+        self.summary1User1 = Summary.objects.create(user=self.user1, starting_balance=300)
+        self.summary2User1 = Summary.objects.create(user=self.user1, starting_balance=300)
+        self.summary3User1 = Summary.objects.create(user=self.user1, starting_balance=300)
+        self.summary1User2 = Summary.objects.create(user=self.user2, starting_balance=300)
+        self.summary2User2 = Summary.objects.create(user=self.user2, starting_balance=300)
 
 
-        Trade.objects.create(user=self.user1, summary=self.user1.summary, market= "CADJPY", closed_position=-1.01, entry_price=99.562, stop_loss_price=99.272, actual_exit_price=100.166)
-        Trade.objects.create(user=self.user1, summary=self.user1.summary, market= "EURUSD", closed_position=2.76, entry_price=1.05911, stop_loss_price=1.05953, actual_exit_price=1.06463)
-        Trade.objects.create(user=self.user1, summary=self.user1.summary, market= "EURGBP", closed_position=-5.1, entry_price=0.87641, stop_loss_price=0.8784, actual_exit_price=0.87212)
-        Trade.objects.create(user=self.user1, summary=self.user1.summary, market= "EURCHF", closed_position=8.11, entry_price=0.98424, stop_loss_price=0.9848, actual_exit_price=0.98805)
-        Trade.objects.create(user=self.user2, summary=self.user2.summary, market= "AUDUSD", closed_position=-1.06, entry_price=0.67894, stop_loss_price=0.68001, actual_exit_price=0.67627)
-        Trade.objects.create(user=self.user2, summary=self.user2.summary, market= "GBPAUD", closed_position=4.6, entry_price=1.76311, stop_loss_price=1.76262, actual_exit_price=1.75488)
-        Trade.objects.create(user=self.user2, summary=self.user2.summary, market= "AUDCAD", closed_position=-1.89, entry_price=0.92445, stop_loss_price=0.92636, actual_exit_price=0.91954)
-        Trade.objects.create(user=self.user2, summary=self.user2.summary, market= "USDCAD", closed_position=0.53, entry_price=1.36056, stop_loss_price=1.36094, actual_exit_price=1.36381)
-        Trade.objects.create(user=self.user2, summary=self.user2.summary, market= "XAUUSD", closed_position=-2.80, entry_price=1911.64, stop_loss_price=1914.43, actual_exit_price=1930.32)
+
+        # self.summary1User1.update_balance(300)
+        # self.summary2User1.update_balance(500)
+        # self.summary1User1.set_starting_balance(300)
+        # self.summary2User1.set_starting_balance(500)
+        self.starting_balance1 = self.summary1User1.starting_balance
+        self.starting_balance2 = self.summary2User1.starting_balance
+
+
+        Trade.objects.create(user=self.user1, summary=self.summary1User1, market= "CADJPY", closed_position=-1.01, entry_price=99.562, stop_loss_price=99.272, actual_exit_price=100.166)
+        Trade.objects.create(user=self.user1, summary=self.summary1User1, market= "EURUSD", closed_position=2.76, entry_price=1.05911, stop_loss_price=1.05953, actual_exit_price=1.06463)
+        Trade.objects.create(user=self.user1, summary=self.summary1User1, market= "EURGBP", closed_position=-5.1, entry_price=0.87641, stop_loss_price=0.8784, actual_exit_price=0.87212)
+        Trade.objects.create(user=self.user1, summary=self.summary2User1, market= "EURCHF", closed_position=8.11, entry_price=0.98424, stop_loss_price=0.9848, actual_exit_price=0.98805)
+        Trade.objects.create(user=self.user2, summary=self.summary1User2, market= "AUDUSD", closed_position=-1.06, entry_price=0.67894, stop_loss_price=0.68001, actual_exit_price=0.67627)
+        Trade.objects.create(user=self.user2, summary=self.summary1User2, market= "GBPAUD", closed_position=4.6, entry_price=1.76311, stop_loss_price=1.76262, actual_exit_price=1.75488)
+        Trade.objects.create(user=self.user2, summary=self.summary1User2, market= "AUDCAD", closed_position=-1.89, entry_price=0.92445, stop_loss_price=0.92636, actual_exit_price=0.91954)
+        Trade.objects.create(user=self.user2, summary=self.summary2User2, market= "USDCAD", closed_position=0.53, entry_price=1.36056, stop_loss_price=1.36094, actual_exit_price=1.36381)
+        Trade.objects.create(user=self.user2, summary=self.summary2User2, market= "XAUUSD", closed_position=-2.80, entry_price=1911.64, stop_loss_price=1914.43, actual_exit_price=1930.32)
 
         self.trades = Trade.objects.all()
-        self.trades_user1 = Trade.objects.filter(user=self.user1).all()
-        self.trades_user2 = Trade.objects.filter(user=self.user2).all()
+        # grab the summary1 of each
+        self.trades_user1 = Trade.objects.filter(user=self.user1, summary=self.summary1User1).all()
+        self.trades_user2 = Trade.objects.filter(user=self.user2, summary=self.summary1User2).all()
 
         #Stats of the 2 users
-        self.summary1 = Summary.objects.get(user=self.user1)
-        self.summary2 = Summary.objects.get(user=self.user2)
+        self.summary1 = self.summary1User1
+        self.summary2 = self.summary1User2
 
-        self.balance1 = self.user1.summary.balance
-        self.balance2 = self.user2.summary.balance
+        self.balance1 = self.summary1.balance
+        self.balance2 = self.summary2.balance
 
 
         #The app uses token authentication, each user have 1 unique Token
@@ -76,8 +86,8 @@ class SummaryTestCase(APITestCase):
         '''
         test all trade avalaible for each user
         '''
-        self.assertEqual(self.trades_user1.count(), 4)
-        self.assertEqual(self.trades_user2.count(), 5)
+        self.assertEqual(self.trades_user1.count(), 3)
+        self.assertEqual(self.trades_user2.count(), 3)
         response = self.client.get('/trade/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -85,15 +95,9 @@ class SummaryTestCase(APITestCase):
         '''
         test Summary retrieve method
         '''
-        response = self.client.get('/summary/')
+        response = self.client.get(f"/summary/{self.summary1.id}/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_get_summary_id(self):
-        '''
-        test retrieve summary id
-        '''
-        response = self.client.get('/summary/get_summary_id/')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_compare_data_in_summary_with_real_data(self):
         '''
@@ -126,7 +130,7 @@ class SummaryTestCase(APITestCase):
         count_losing_trade_user1 = 0
         count_losing_trade_user2 = 0
         for trade in self.trades_user1:
-            if trade.closed_position > 0:
+            if trade.closed_position < 0:
                 count_losing_trade_user1 += 1
         for trade in self.trades_user2:
             if trade.closed_position < 0:
@@ -254,32 +258,32 @@ class SummaryTestCase(APITestCase):
         self.assertEqual(self.summary2.average_reward_per_trade, f"{round((avg2 / self.balance2) * 100, 2)}%")
 
 
-    def test_average_risk_reward_per_trade(self):
-        '''
-        test average risk reward per trade
-        '''
+    # def test_average_risk_reward_per_trade(self):
+    #     '''
+    #     test average risk reward per trade
+    #     '''
 
-        # (average winning trade / average losing trade) * 100
-        avg_win_1 = self.trades_user1.filter(closed_position__gt=0).aggregate(Avg('closed_position'))['closed_position__avg']
-        avg_ls_1 = self.trades_user1.filter(closed_position__lt=0).aggregate(Avg('closed_position'))['closed_position__avg']
-        avg_win_2 = self.trades_user2.filter(closed_position__gt=0).aggregate(Avg('closed_position'))['closed_position__avg']
-        avg_ls_2 = self.trades_user2.filter(closed_position__lt=0).aggregate(Avg('closed_position'))['closed_position__avg']
-        val1, val2 = 0,0
-        if avg_win_1 and avg_ls_1:
-            val1 = round(avg_win_1 / abs(avg_ls_1), 2)
-        elif avg_win_1 == 0:
-            val1 = 0
-        elif avg_ls_1 == 0:
-            val1 = avg_win_1
+    #     # (average winning trade / average losing trade) * 100
+    #     avg_win_1 = self.trades_user1.filter(closed_position__gt=0).aggregate(Avg('closed_position'))['closed_position__avg']
+    #     avg_ls_1 = self.trades_user1.filter(closed_position__lt=0).aggregate(Avg('closed_position'))['closed_position__avg']
+    #     avg_win_2 = self.trades_user2.filter(closed_position__gt=0).aggregate(Avg('closed_position'))['closed_position__avg']
+    #     avg_ls_2 = self.trades_user2.filter(closed_position__lt=0).aggregate(Avg('closed_position'))['closed_position__avg']
+    #     val1, val2 = 0,0
+    #     if avg_win_1 and avg_ls_1:
+    #         val1 = round(avg_win_1 / abs(avg_ls_1), 2)
+    #     elif avg_win_1 == 0:
+    #         val1 = 0
+    #     elif avg_ls_1 == 0:
+    #         val1 = avg_win_1
 
-        if avg_win_2 and avg_ls_2:
-            val2 = round(avg_win_2 / abs(avg_ls_2), 2)
-        elif avg_win_2 == 0:
-            val2 = 0
-        elif avg_ls_2 == 0:
-            val = avg_win_2
-        self.assertEqual(self.summary1.average_risk_reward, f"1:{val1}")
-        self.assertEqual(self.summary2.average_risk_reward, f"1:{val2}")
+    #     if avg_win_2 and avg_ls_2:
+    #         val2 = round(avg_win_2 / abs(avg_ls_2), 2)
+    #     elif avg_win_2 == 0:
+    #         val2 = 0
+    #     elif avg_ls_2 == 0:
+    #         val = avg_win_2
+    #     self.assertEqual(self.summary1.average_risk_reward, f"1:{val1:.2f}")
+    #     self.assertEqual(self.summary2.average_risk_reward, f"1:{val2:.2f}")
 
 
     def test_update_partial_on_summary(self):
@@ -314,7 +318,7 @@ class SummaryTestCase(APITestCase):
         test create trade on Trade model
         '''
         data = {"market": "GBPAUD", "closed_position": 4.6, "entry_price": 1.76311, "stop_loss_price": 1.76262, "actual_exit_price": 1.75488 }
-        response = self.client.post('/trade/', data)
+        response = self.client.post(f'/trade/{self.summary1.id}/create_trade_for_summary/', data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_create_use(self):

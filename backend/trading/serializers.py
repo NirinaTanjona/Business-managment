@@ -18,12 +18,12 @@ class ChartDataSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Trade
-        fields = ['id', 'created', 'modified', 'balance']
+        fields = ['modified', 'balance']
 
 
 class SummarySerializer(serializers.ModelSerializer):
 
-    trades = TradeSerializer(many=True)
+    # trades = TradeSerializer(many=True)
 
     class Meta:
         model = Summary
@@ -46,6 +46,6 @@ class SummarySerializer(serializers.ModelSerializer):
             'average_risk_per_trade',
             'average_reward_per_trade',
             'trade_win_rate',
-            'trades',
+            # 'trades',
         )
-        extra_kwargs = {'trades': {'required': False, 'allow_null': True}}
+        # extra_kwargs = {'trades': {'required': False, 'allow_null': True}}

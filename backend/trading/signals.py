@@ -48,7 +48,7 @@ def action(user, summary, query):
 def report_uploaded(sender, instance, created, **kwargs):
     if created:
         Token.objects.create(user=instance)
-        Summary.objects.create(user=instance)
+        # Summary.objects.create(user=instance)
 
 
 @receiver(post_save, sender=Trade)
@@ -58,7 +58,7 @@ def update_summary(sender, instance, created, **kwargs):
     '''
 
     user = instance.user
-    summary = user.summary
+    summary = instance.summary
     query = summary.trades.all()
 
     if created:
@@ -76,7 +76,7 @@ def update_summary(sender, instance, **kwargs):
     update the summary model when one trade got deleted
     '''
     user = instance.user
-    summary = user.summary
+    summary = instance.summary
     query = summary.trades.all()
     if query.count():
         action(user, summary, query)
