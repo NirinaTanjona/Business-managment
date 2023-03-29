@@ -67,7 +67,7 @@ class TradeViewSet(
             return JsonResponse({"result": "error","message": "Json decoding error"}, status= 400)
 
 
-    @action(detail=True, methods=['GET'])
+    @action(detail=True, methods=['GET'], renderer_classes=(renderers.JSONRenderer,))
     def get_trades_from_summary(self, request, pk=None):
         try:
             current_user = request.user

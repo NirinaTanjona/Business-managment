@@ -22,7 +22,7 @@ class Summary(
         return f"{self.user.username} stats"
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    # name = models.CharField(default='', max_length=200)
+    name = models.CharField(default='', max_length=200)
     starting_balance = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     balance = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     total_number_of_trades = models.PositiveIntegerField(default=0)

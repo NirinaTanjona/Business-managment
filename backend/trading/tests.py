@@ -335,3 +335,11 @@ class SummaryTestCase(APITestCase):
         '''
         self.assertEqual(self.summary1.trades.all().count(), self.trades_user1.count())
         self.assertEqual(self.summary2.trades.all().count(), self.trades_user2.count())
+
+    def test_create_summary_with_required_data(self):
+        '''
+        test create summary with required data
+        '''
+        data = {"starting_balance": 300, "name": "FTMO account"}
+        response = self.client.post('/summary/', data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)

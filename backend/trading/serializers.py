@@ -28,6 +28,7 @@ class SummarySerializer(serializers.ModelSerializer):
     class Meta:
         model = Summary
         fields = (
+            'name',
             'starting_balance',
             'balance',
             'total_number_of_trades',
