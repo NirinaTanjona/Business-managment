@@ -30,15 +30,12 @@ class SummaryTestCase(APITestCase):
         self.summary1User1 = Summary.objects.create(user=self.user1, starting_balance=300)
         self.summary2User1 = Summary.objects.create(user=self.user1, starting_balance=300)
         self.summary3User1 = Summary.objects.create(user=self.user1, starting_balance=300)
+        self.summary4User1 = Summary.objects.create(user=self.user1, starting_balance=300)
         self.summary1User2 = Summary.objects.create(user=self.user2, starting_balance=300)
         self.summary2User2 = Summary.objects.create(user=self.user2, starting_balance=300)
 
 
 
-        # self.summary1User1.update_balance(300)
-        # self.summary2User1.update_balance(500)
-        # self.summary1User1.set_starting_balance(300)
-        # self.summary2User1.set_starting_balance(500)
         self.starting_balance1 = self.summary1User1.starting_balance
         self.starting_balance2 = self.summary2User1.starting_balance
 
@@ -343,3 +340,11 @@ class SummaryTestCase(APITestCase):
         data = {"starting_balance": 300, "name": "FTMO account"}
         response = self.client.post('/summary/', data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_delete_summary(self):
+        '''
+        test delete summary
+        '''
+        response = self.client.delete(f'/summary/{self.summary1User1.id}/')
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)

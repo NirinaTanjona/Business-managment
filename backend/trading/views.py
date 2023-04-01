@@ -105,6 +105,7 @@ class SummaryViewSet(
         ListModelMixin,
         RetrieveModelMixin,
         UpdateModelMixin,
+        DestroyModelMixin,
         viewsets.GenericViewSet
         ):
     """
